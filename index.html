@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TextCraft - Sistema Completo de Utilidades de Texto</title>
+  <meta name="description" content="Herramienta moderna y profesional de utilidades de texto: limpieza de publicidad, transformación de mayúsculas, eliminación de espacios y más.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.4);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(156, 163, 175, 0.7);
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: rgba(107, 114, 128, 0.4);
+    }
+    .dark ::-webkit-scrollbar-thumb:hover {
+      background: rgba(107, 114, 128, 0.7);
+    }
+
+    /* Subtle Animated Gradients */
+    .hero-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.05) 50%, transparent 70%);
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Toast animation */
+    @keyframes toastIn {
+      from { transform: translateY(100%) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes toastOut {
+      from { transform: translateY(0) scale(1); opacity: 1; }
+      to { transform: translateY(100%) scale(0.95); opacity: 0; }
+    }
+    .toast-enter {
+      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .toast-exit {
+      animation: toastOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Pulse highlight on transform */
+    @keyframes subtlePulse {
+      0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5); }
+      70% { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+    .pulse-effect {
+      animation: subtlePulse 0.6s ease-out;
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans transition-colors duration-200 antialiased selection:bg-brand-500 selection:text-white flex flex-col">
+
+  <!-- Glow Background Effect -->
+  <div class="hero-glow"></div>
+
+  <!-- Header -->
+  <header class="relative z-10 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md sticky top-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo & Branding -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-slate-900 via-brand-700 to-indigo-600 dark:from-white dark:via-brand-200 dark:to-indigo-400 bg-clip-text text-transparent">
+              TextCraft
+            </h1>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border border-brand-200 dark:border-brand-800">
+              PRO UTILITIES
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Sistema Inteligente de Transformación y Limpieza de Texto</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions & Theme Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Load Demo Text -->
+        <button id="btn-load-demo" title="Cargar texto de prueba con URLs, anuncios y errores para probar" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 rounded-lg transition-all border border-slate-200/60 dark:border-slate-700/60">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+          </svg>
+          <span class="hidden md:inline">Cargar</span> Ejemplo
+        </button>
+
+        <!-- View Switcher (Single vs Dual) -->
+        <div class="hidden lg:flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60 text-xs font-medium">
+          <button id="btn-view-split" class="px-2.5 py-1 rounded-md transition-all text-brand-700 dark:text-brand-300 bg-white dark:bg-slate-700 shadow-sm">
+            Panel Dividido
+          </button>
+          <button id="btn-view-single" class="px-2.5 py-1 rounded-md transition-all text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200">
+            Editor Único
+          </button>
+        </div>
+
+        <!-- Dark/Light Theme Toggle -->
+        <button id="btn-toggle-theme" aria-label="Cambiar tema" class="p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 border border-slate-200/60 dark:border-slate-700/60 transition-all">
+          <!-- Sun icon -->
+          <svg id="theme-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+          <!-- Moon icon -->
+          <svg id="theme-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6 relative z-10">
+
+    <!-- Live Metrics Dashboard -->
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <!-- Palabras -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-3 rounded-xl shadow-xs transition-all hover:border-brand-300 dark:hover:border-brand-700">
+        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Palabras</span>
+        <span id="stat-words" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-white">0</span>
+      </div>
+      <!-- Caracteres Total -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-3 rounded-xl shadow-xs transition-all hover:border-brand-300 dark:hover:border-brand-700">
+        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Caracteres</span>
+        <span id="stat-chars" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-white">0</span>
+      </div>
+      <!-- Caracteres Sin Espacios -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-3 rounded-xl shadow-xs transition-all hover:border-brand-300 dark:hover:border-brand-700">
+        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Sin Espacios</span>
+        <span id="stat-chars-nospace" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-white">0</span>
+      </div>
+      <!-- Párrafos -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-3 rounded-xl shadow-xs transition-all hover:border-brand-300 dark:hover:border-brand-700">
+        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Párrafos</span>
+        <span id="stat-paragraphs" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-white">0</span>
+      </div>
+      <!-- Líneas -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-3 rounded-xl shadow-xs transition-all hover:border-brand-300 dark:hover:border-brand-700">
+        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Líneas</span>
+        <span id="stat-lines" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-white">0</span>
+      </div>
+      <!-- Tiempo de Lectura -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-3 rounded-xl shadow-xs transition-all hover:border-brand-300 dark:hover:border-brand-700">
+        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Lectura Est.</span>
+        <span id="stat-reading-time" class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-white">0m 0s</span>
+      </div>
+    </section>
+
+    <!-- Editors Workspace (Split / Single) -->
+    <section id="workspace-container" class="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-[380px]">
+      
+      <!-- Input Panel -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex flex-col overflow-hidden transition-all focus-within:border-brand-400 dark:focus-within:border-brand-600">
+        <!-- Input Toolbar -->
+        <div class="px-4 py-2.5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Texto Original / Entrada</h2>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <!-- Paste Button -->
+            <button id="btn-paste" title="Pegar desde el portapapeles" class="px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded-md transition-all flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+              Pegar
+            </button>
+            <!-- Undo Button -->
+            <button id="btn-undo" title="Deshacer última acción" class="p-1 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded-md transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+              </svg>
+            </button>
+            <!-- Redo Button -->
+            <button id="btn-redo" title="Rehacer" class="p-1 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded-md transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"></path>
+              </svg>
+            </button>
+            <!-- Reset Button -->
+            <button id="btn-clear-all" title="Borrar todo el texto" class="px-2 py-1 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-md transition-all flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              Limpiar
+            </button>
+          </div>
+        </div>
+        <!-- Input Textarea -->
+        <textarea
+          id="input-text"
+          class="flex-1 w-full p-4 bg-transparent resize-y outline-none font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 min-h-[260px]"
+          placeholder="Escribe, escribe o pega tu texto aquí para comenzar a transformarlo..."
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <!-- Output Panel -->
+      <div id="output-panel" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex flex-col overflow-hidden transition-all focus-within:border-brand-400 dark:focus-within:border-brand-600">
+        <!-- Output Toolbar -->
+        <div class="px-4 py-2.5 bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse"></span>
+            <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Texto Transformado / Resultado</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <!-- Swap / Use as Input -->
+            <button id="btn-use-as-input" title="Usar este resultado como nueva entrada para seguir procesando" class="px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded-md transition-all flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+              </svg>
+              <span class="hidden sm:inline">Encadenar</span>
+            </button>
+            <!-- Download TXT -->
+            <button id="btn-download" title="Descargar texto resultante como archivo .txt" class="px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 rounded-md transition-all flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+              .txt
+            </button>
+          </div>
+        </div>
+        <!-- Output Textarea -->
+        <textarea
+          id="output-text"
+          class="flex-1 w-full p-4 bg-transparent resize-y outline-none font-mono text-sm leading-relaxed text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 min-h-[260px]"
+          placeholder="El resultado procesado aparecerá aquí en tiempo real o al aplicar una herramienta..."
+          spellcheck="false"
+        ></textarea>
+        <!-- One-Click Primary Copy Action Bar -->
+        <div class="p-3 bg-slate-50/90 dark:bg-slate-900/90 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between gap-3">
+          <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 truncate">
+            <svg class="w-4 h-4 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span id="output-status" class="truncate">Listo para procesar o copiar</span>
+          </div>
+
+          <!-- Big Prominent One-Click Copy Button -->
+          <button
+            id="btn-copy-result"
+            class="relative inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-700 hover:from-brand-500 hover:to-indigo-500 shadow-md shadow-brand-500/30 hover:shadow-brand-500/40 active:scale-[0.98] transition-all cursor-pointer select-none"
+          >
+            <!-- Default Copy Icon -->
+            <svg id="icon-copy-default" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+            </svg>
+            <!-- Checkmark Icon (when copied) -->
+            <svg id="icon-copy-success" class="w-4 h-4 hidden text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span id="copy-button-text">Copiar al Portapapeles</span>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Action Tools Dashboard (Categorized) -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+      <!-- CATEGORÍA 1: MAYÚSCULAS Y MINÚSCULAS -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+              Aa
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Transformación de Caja</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Mayúsculas, minúsculas y estilos</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 mt-3">
+            <!-- MAYÚSCULAS -->
+            <button data-action="uppercase" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950/50 dark:hover:text-brand-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>MAYÚSCULAS</span>
+              <span class="text-[10px] text-slate-400 font-mono">ABC</span>
+            </button>
+
+            <!-- minúsculas -->
+            <button data-action="lowercase" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950/50 dark:hover:text-brand-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>minúsculas</span>
+              <span class="text-[10px] text-slate-400 font-mono">abc</span>
+            </button>
+
+            <!-- Tipo Oración -->
+            <button data-action="sentence-case" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950/50 dark:hover:text-brand-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>Tipo oración</span>
+              <span class="text-[10px] text-slate-400 font-mono">Abc.</span>
+            </button>
+
+            <!-- Tipo Título -->
+            <button data-action="title-case" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950/50 dark:hover:text-brand-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>Tipo Título</span>
+              <span class="text-[10px] text-slate-400 font-mono">Abc Def</span>
+            </button>
+
+            <!-- Bonus: Alternating Case -->
+            <button data-action="alternating-case" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950/50 dark:hover:text-brand-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>aLtErNaDo</span>
+              <span class="text-[10px] text-slate-400 font-mono">aBc De</span>
+            </button>
+
+            <!-- Bonus: Invertir Mayús/Minús -->
+            <button data-action="invert-case" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950/50 dark:hover:text-brand-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>Invertir Caso</span>
+              <span class="text-[10px] text-slate-400 font-mono">⇄</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORÍA 2: LIMPIEZA DE RUIDO Y DUPLICADOS -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xs">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Limpieza de Ruido</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Elimina publicidad, enlaces y duplicados</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 mt-3">
+            <!-- Limpiar Publicidad / URLs (Regex) -->
+            <button data-action="clean-ads-urls" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-950/50 dark:hover:text-amber-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between group">
+              <div class="flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-amber-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                </svg>
+                <span>Limpiar Publicidad / URLs</span>
+              </div>
+              <span class="text-[10px] text-amber-600 dark:text-amber-400 font-mono bg-amber-100/70 dark:bg-amber-950/70 px-1.5 py-0.5 rounded">Regex</span>
+            </button>
+
+            <!-- Eliminar Palabras Repetidas -->
+            <button data-action="remove-repeated-words" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-950/50 dark:hover:text-amber-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between group">
+              <div class="flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-amber-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                </svg>
+                <span>Eliminar palabras repetidas</span>
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono">el el → el</span>
+            </button>
+
+            <!-- Eliminar Líneas Duplicadas -->
+            <button data-action="remove-duplicate-lines" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-950/50 dark:hover:text-amber-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>Eliminar líneas duplicadas</span>
+              <span class="text-[10px] text-slate-400 font-mono">Únicas</span>
+            </button>
+
+            <!-- Eliminar Emojis y Símbolos Especiales -->
+            <button data-action="remove-emojis" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-950/50 dark:hover:text-amber-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>Eliminar emojis y símbolos</span>
+              <span class="text-[10px] text-slate-400 font-mono">Texto plano</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORÍA 3: ESPACIADO Y PÁRRAFOS -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Espaciado y Formato</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Normaliza párrafos y espacios en blanco</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 mt-3">
+            <!-- Eliminar espacios entre párrafos -->
+            <button data-action="remove-paragraph-spaces" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between group">
+              <div class="flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-emerald-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+                <span>Eliminar espacios entre párrafos</span>
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono">Sin huecos</span>
+            </button>
+
+            <!-- Limpiar espacios extra -->
+            <button data-action="remove-extra-spaces" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>Limpiar espacios extra</span>
+              <span class="text-[10px] text-slate-400 font-mono">&quot;  &quot; → &quot; &quot;</span>
+            </button>
+
+            <!-- Eliminar todos los saltos de línea -->
+            <button data-action="remove-all-linebreaks" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>Todo en una sola línea</span>
+              <span class="text-[10px] text-slate-400 font-mono">Unir</span>
+            </button>
+
+            <!-- Recortar bordes (Trim) -->
+            <button data-action="trim-lines" class="tool-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-300 border border-slate-200/80 dark:border-slate-700 transition-all flex items-center justify-between">
+              <span>Recortar espacios inicio/fin</span>
+              <span class="text-[10px] text-slate-400 font-mono">Trim</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Guide / Feature Tips Banner -->
+    <section class="bg-gradient-to-r from-brand-50 to-indigo-50 dark:from-slate-900 dark:to-slate-900/60 border border-brand-100 dark:border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">Consejos de uso rápido</h4>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+            Puedes hacer clic en <strong>"Encadenar"</strong> para aplicar múltiples filtros consecutivos, o usar el botón <strong>"Copiar al Portapapeles"</strong> con un solo clic.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400">
+        <span class="inline-flex items-center px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">Ctrl+Z: Deshacer</span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">100% Privado (Client-Side)</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+      <p>© TextCraft • Suite de Utilidades de Texto de Alto Rendimiento. Procesamiento local instantáneo en el navegador.</p>
+      <div class="flex items-center gap-4">
+        <span>Diseño SPA UI/UX</span>
+        <span>•</span>
+        <span>Vanilla JS + Tailwind</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- APPLICATION JAVASCRIPT LOGIC -->
+  <script>
+    /**
+     * TextCraft - Complete Text Utilities System
+     * Modular Vanilla ES6 Architecture
+     */
+    (() => {
+      'use strict';
+
+      // ==========================================
+      // 1. STATE MANAGEMENT & HISTORY (UNDO/REDO)
+      // ==========================================
+      const state = {
+        history: [],
+        historyIndex: -1,
+        maxHistory: 30,
+        isSplitView: true,
+      };
+
+      // DOM Elements Cache
+      const DOM = {
+        inputText: document.getElementById('input-text'),
+        outputText: document.getElementById('output-text'),
+        outputPanel: document.getElementById('output-panel'),
+        workspaceContainer: document.getElementById('workspace-container'),
+        btnCopy: document.getElementById('btn-copy-result'),
+        copyBtnText: document.getElementById('copy-button-text'),
+        iconCopyDefault: document.getElementById('icon-copy-default'),
+        iconCopySuccess: document.getElementById('icon-copy-success'),
+        outputStatus: document.getElementById('output-status'),
+        btnPaste: document.getElementById('btn-paste'),
+        btnClearAll: document.getElementById('btn-clear-all'),
+        btnUndo: document.getElementById('btn-undo'),
+        btnRedo: document.getElementById('btn-redo'),
+        btnUseAsInput: document.getElementById('btn-use-as-input'),
+        btnDownload: document.getElementById('btn-download'),
+        btnLoadDemo: document.getElementById('btn-load-demo'),
+        btnToggleTheme: document.getElementById('btn-toggle-theme'),
+        themeSun: document.getElementById('theme-sun'),
+        themeMoon: document.getElementById('theme-moon'),
+        btnViewSplit: document.getElementById('btn-view-split'),
+        btnViewSingle: document.getElementById('btn-view-single'),
+        toastContainer: document.getElementById('toast-container'),
+        // Metrics
+        statWords: document.getElementById('stat-words'),
+        statChars: document.getElementById('stat-chars'),
+        statCharsNoSpace: document.getElementById('stat-chars-nospace'),
+        statParagraphs: document.getElementById('stat-paragraphs'),
+        statLines: document.getElementById('stat-lines'),
+        statReadingTime: document.getElementById('stat-reading-time'),
+      };
+
+      // ==========================================
+      // 2. TEXT PROCESSING ENGINES & MODULES
+      // ==========================================
+
+      /**
+       * Text Cleaning & Regex Module
+       */
+      const TextCleaner = {
+        /**
+         * Clean Ads, URLs, Emails & Common Spam Patterns
+         */
+        cleanAdsAndUrls(text) {
+          if (!text) return '';
+
+          let result = text;
+
+          // 1. URLs (http, https, ftp, www)
+          const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|ftp:\/\/[^\s]+)/gi;
+          result = result.replace(urlRegex, '');
+
+          // 2. Email addresses
+          const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/gi;
+          result = result.replace(emailRegex, '');
+
+          // 3. Common Ad/Promo phrases (English & Spanish)
+          const adPhrases = [
+            /haz\s+clic\s+aqu[ií]/gi,
+            /clic\s+aqu[ií]/gi,
+            /click\s+here/gi,
+            /suscr[ií]bete\s+(a\s+nuestro\s+canal|ya)?/gi,
+            /subscribe\s+(now|to\s+our\s+channel)?/gi,
+            /s[ií]guenos\s+en\s+(las\s+)?redes(\s+sociales)?/gi,
+            /follow\s+us\s+on/gi,
+            /enlace\s+en\s+la\s+descripci[oó]n/gi,
+            /link\s+in\s+bio/gi,
+            /anuncio\s+patrocinado/gi,
+            /sponsored\s+content/gi,
+            /publicidad/gi,
+            /oferta\s+por\s+tiempo\s+limitado/gi,
+            /desc[aá]rgalo\s+gratis/gi,
+            /visita\s+nuestra\s+web/gi,
+            /comp[aá]rtelo\s+con\s+tus\s+amigos/gi,
+            /dale\s+like\s+y\s+comparte/gi,
+          ];
+
+          adPhrases.forEach(regex => {
+            result = result.replace(regex, '');
+          });
+
+          // Clean markdown links leaving just link text if any remained: [text]() -> text
+          result = result.replace(/\[([^\]]+)\]\(\s*\)/g, '$1');
+
+          // Clean empty brackets and leftover artifacts
+          result = result.replace(/\(\s*\)/g, '');
+          result = result.replace(/\[\s*\]/g, '');
+
+          // Clean multi-spaces resulting from removal
+          result = TextCleaner.removeExtraSpaces(result);
+
+          return result;
+        },
+
+        /**
+         * Detect and remove consecutive duplicate words
+         * Examples: "el el" -> "el", "muy muy bueno" -> "muy bueno"
+         * Supports Unicode accents (á, é, í, ó, ú, ñ, etc.)
+         */
+        removeRepeatedWords(text) {
+          if (!text) return '';
+          // Matches repeated words taking into account word boundaries and unicode characters
+          return text.replace(/(^|\s+)([\p{L}\p{N}_]+)(?:\s+\2)+(?=\s|$|[.,;:!?])/giu, '$1$2');
+        },
+
+        /**
+         * Remove consecutive empty paragraphs & excessive blank lines
+         * Leaves no blank lines between paragraphs
+         */
+        removeParagraphSpaces(text) {
+          if (!text) return '';
+          return text
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(line => line.length > 0)
+            .join('\n');
+        },
+
+        /**
+         * Remove all extra spaces between words (keep only 1 space)
+         */
+        removeExtraSpaces(text) {
+          if (!text) return '';
+          return text
+            .split('\n')
+            .map(line => line.replace(/[ \t]+/g, ' ').trim())
+            .join('\n');
+        },
+
+        /**
+         * Merge everything into a single continuous line
+         */
+        removeAllLinebreaks(text) {
+          if (!text) return '';
+          return text
+            .replace(/[\r\n]+/g, ' ')
+            .replace(/[ \t]+/g, ' ')
+            .trim();
+        },
+
+        /**
+         * Trim start and end of every line
+         */
+        trimLines(text) {
+          if (!text) return '';
+          return text
+            .split('\n')
+            .map(line => line.trim())
+            .join('\n');
+        },
+
+        /**
+         * Remove duplicate lines keeping only unique lines in order
+         */
+        removeDuplicateLines(text) {
+          if (!text) return '';
+          const lines = text.split(/\r?\n/);
+          const seen = new Set();
+          const unique = [];
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!seen.has(trimmed)) {
+              seen.add(trimmed);
+              unique.push(line);
+            }
+          }
+          return unique.join('\n');
+        },
+
+        /**
+         * Strip emojis and non-standard special symbol noise
+         */
+        removeEmojis(text) {
+          if (!text) return '';
+          // Regex for emoji ranges
+          return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
+        }
+      };
+
+      /**
+       * Case Transformation Module
+       */
+      const TextTransform = {
+        uppercase(text) {
+          return text ? text.toUpperCase() : '';
+        },
+
+        lowercase(text) {
+          return text ? text.toLowerCase() : '';
+        },
+
+        /**
+         * Sentence Case: Capitalizes first letter of each sentence
+         */
+        sentenceCase(text) {
+          if (!text) return '';
+          const lower = text.toLowerCase();
+          // Regex to match beginning of text or punctuation (. ? !) followed by space
+          return lower.replace(/(^\s*|[.?!]\s+)([\p{L}])/gu, (match, prefix, char) => {
+            return prefix + char.toUpperCase();
+          });
+        },
+
+        /**
+         * Title Case: Capitalizes each word except minor words if preferred,
+         * or standard word capitalization for universal utility.
+         */
+        titleCase(text) {
+          if (!text) return '';
+          return text.toLowerCase().replace(/(^|[^\p{L}\p{N}])([\p{L}])/gu, (match, prefix, letter) => {
+            return prefix + letter.toUpperCase();
+          });
+        },
+
+        /**
+         * Alternating Case: aLtErNaTiNg
+         */
+        alternatingCase(text) {
+          if (!text) return '';
+          let count = 0;
+          return text.split('').map(char => {
+            if (/\p{L}/u.test(char)) {
+              const res = count % 2 === 0 ? char.toLowerCase() : char.toUpperCase();
+              count++;
+              return res;
+            }
+            return char;
+          }).join('');
+        },
+
+        /**
+         * Invert Case: Upper -> Lower, Lower -> Upper
+         */
+        invertCase(text) {
+          if (!text) return '';
+          return text.split('').map(char => {
+            return char === char.toUpperCase() ? char.toLowerCase() : char.toUpperCase();
+          }).join('');
+        }
+      };
+
+      // ==========================================
+      // 3. METRICS & STATISTICS ANALYZER
+      // ==========================================
+      const Metrics = {
+        update(text) {
+          const raw = text || '';
+          
+          // Total Chars
+          const totalChars = raw.length;
+          
+          // Chars No Space
+          const charsNoSpace = raw.replace(/\s/g, '').length;
+          
+          // Words count
+          const wordsMatches = raw.trim().match(/[\p{L}\p{N}_'-]+/gu);
+          const words = wordsMatches ? wordsMatches.length : 0;
+          
+          // Paragraphs
+          const paragraphs = raw.trim() === '' ? 0 : raw.split(/\n+/).filter(p => p.trim().length > 0).length;
+          
+          // Lines
+          const lines = raw === '' ? 0 : raw.split(/\r?\n/).length;
+
+          // Reading time estimation (~200 words per minute)
+          const minutes = Math.floor(words / 200);
+          const seconds = Math.floor((words % 200) / (200 / 60));
+          const readingTimeStr = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+
+          // Update UI DOM
+          DOM.statWords.textContent = words.toLocaleString();
+          DOM.statChars.textContent = totalChars.toLocaleString();
+          DOM.statCharsNoSpace.textContent = charsNoSpace.toLocaleString();
+          DOM.statParagraphs.textContent = paragraphs.toLocaleString();
+          DOM.statLines.textContent = lines.toLocaleString();
+          DOM.statReadingTime.textContent = readingTimeStr;
+        }
+      };
+
+      // ==========================================
+      // 4. TOAST & NOTIFICATION SYSTEM
+      // ==========================================
+      const Toast = {
+        show(message, type = 'success', duration = 3000) {
+          const toast = document.createElement('div');
+          
+          // Choose icon and color scheme based on type
+          let icon = `
+            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+          `;
+          let borderColor = 'border-emerald-500/30';
+          let bgColor = 'bg-white dark:bg-slate-900';
+
+          if (type === 'error' || type === 'warning') {
+            icon = `
+              <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+            `;
+            borderColor = 'border-amber-500/30';
+          }
+
+          toast.className = `toast-enter flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl border ${borderColor} ${bgColor} text-slate-800 dark:text-slate-100 text-xs font-semibold backdrop-blur-md transition-all`;
+          toast.innerHTML = `
+            ${icon}
+            <span>${message}</span>
+          `;
+
+          DOM.toastContainer.appendChild(toast);
+
+          setTimeout(() => {
+            toast.classList.remove('toast-enter');
+            toast.classList.add('toast-exit');
+            setTimeout(() => {
+              if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+              }
+            }, 220);
+          }, duration);
+        }
+      };
+
+      // ==========================================
+      // 5. HISTORY ENGINE (UNDO / REDO)
+      // ==========================================
+      const History = {
+        push(text) {
+          // If state is same as current top, skip
+          if (state.historyIndex >= 0 && state.history[state.historyIndex] === text) {
+            return;
+          }
+          // Truncate future states if we were in middle of history
+          state.history = state.history.slice(0, state.historyIndex + 1);
+          state.history.push(text);
+          if (state.history.length > state.maxHistory) {
+            state.history.shift();
+          } else {
+            state.historyIndex++;
+          }
+          History.updateButtons();
+        },
+
+        undo() {
+          if (state.historyIndex > 0) {
+            state.historyIndex--;
+            const prev = state.history[state.historyIndex];
+            DOM.inputText.value = prev;
+            DOM.outputText.value = prev;
+            Metrics.update(prev);
+            History.updateButtons();
+            Toast.show('Deshecho', 'success', 1500);
+          }
+        },
+
+        redo() {
+          if (state.historyIndex < state.history.length - 1) {
+            state.historyIndex++;
+            const next = state.history[state.historyIndex];
+            DOM.inputText.value = next;
+            DOM.outputText.value = next;
+            Metrics.update(next);
+            History.updateButtons();
+            Toast.show('Rehecho', 'success', 1500);
+          }
+        },
+
+        updateButtons() {
+          DOM.btnUndo.disabled = state.historyIndex <= 0;
+          DOM.btnRedo.disabled = state.historyIndex >= state.history.length - 1;
+        }
+      };
+
+      // ==========================================
+      // 6. ACTION DISPATCHER & CORE WORKFLOW
+      // ==========================================
+      function applyTransformation(actionType, actionLabel) {
+        // Read text: If there's selected text or current input text
+        const sourceText = DOM.inputText.value;
+
+        // Validation: Empty text handling
+        if (!sourceText || sourceText.trim() === '') {
+          Toast.show('Por favor, ingresa o pega algún texto antes de usar una herramienta', 'warning');
+          DOM.inputText.focus();
+          return;
+        }
+
+        let transformed = '';
+
+        switch (actionType) {
+          // Case Transformations
+          case 'uppercase':
+            transformed = TextTransform.uppercase(sourceText);
+            break;
+          case 'lowercase':
+            transformed = TextTransform.lowercase(sourceText);
+            break;
+          case 'sentence-case':
+            transformed = TextTransform.sentenceCase(sourceText);
+            break;
+          case 'title-case':
+            transformed = TextTransform.titleCase(sourceText);
+            break;
+          case 'alternating-case':
+            transformed = TextTransform.alternatingCase(sourceText);
+            break;
+          case 'invert-case':
+            transformed = TextTransform.invertCase(sourceText);
+            break;
+
+          // Cleaning & Noise
+          case 'clean-ads-urls':
+            transformed = TextCleaner.cleanAdsAndUrls(sourceText);
+            break;
+          case 'remove-repeated-words':
+            transformed = TextCleaner.removeRepeatedWords(sourceText);
+            break;
+          case 'remove-duplicate-lines':
+            transformed = TextCleaner.removeDuplicateLines(sourceText);
+            break;
+          case 'remove-emojis':
+            transformed = TextCleaner.removeEmojis(sourceText);
+            break;
+
+          // Spacing & Paragraphs
+          case 'remove-paragraph-spaces':
+            transformed = TextCleaner.removeParagraphSpaces(sourceText);
+            break;
+          case 'remove-extra-spaces':
+            transformed = TextCleaner.removeExtraSpaces(sourceText);
+            break;
+          case 'remove-all-linebreaks':
+            transformed = TextCleaner.removeAllLinebreaks(sourceText);
+            break;
+          case 'trim-lines':
+            transformed = TextCleaner.trimLines(sourceText);
+            break;
+
+          default:
+            console.warn('Acción desconocida:', actionType);
+            return;
+        }
+
+        // Apply result to Output Textarea
+        DOM.outputText.value = transformed;
+
+        // Visual feedback highlight
+        DOM.outputText.classList.remove('pulse-effect');
+        void DOM.outputText.offsetWidth; // trigger reflow
+        DOM.outputText.classList.add('pulse-effect');
+
+        // Update status label
+        DOM.outputStatus.textContent = `Aplicado: ${actionLabel || actionType}`;
+
+        // Save history for undo/redo
+        History.push(transformed);
+
+        // Update live metrics on transformed text
+        Metrics.update(transformed);
+
+        // Toast feedback
+        Toast.show(`¡${actionLabel || 'Transformación'} aplicada con éxito!`, 'success', 2000);
+      }
+
+      // ==========================================
+      // 7. CLIPBOARD ONE-CLICK COPY
+      // ==========================================
+      async function copyResultToClipboard() {
+        // Source text to copy: Output text or input text if output is empty
+        const textToCopy = DOM.outputText.value || DOM.inputText.value;
+
+        if (!textToCopy || textToCopy.trim() === '') {
+          Toast.show('No hay ningún texto para copiar', 'warning');
+          return;
+        }
+
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(textToCopy);
+          } else {
+            // Fallback for non-https or older browser environments
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = textToCopy;
+            tempTextarea.style.position = 'fixed';
+            tempTextarea.style.left = '-999999px';
+            tempTextarea.style.top = '-999999px';
+            document.body.appendChild(tempTextarea);
+            tempTextarea.focus();
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+          }
+
+          // UI Visual feedback on the button
+          DOM.iconCopyDefault.classList.add('hidden');
+          DOM.iconCopySuccess.classList.remove('hidden');
+          DOM.copyBtnText.textContent = '¡Copiado con Éxito!';
+          DOM.btnCopy.classList.add('from-emerald-600', 'to-teal-600');
+
+          Toast.show('¡Texto copiado al portapapeles!', 'success');
+
+          // Reset button after 2.5 seconds
+          setTimeout(() => {
+            DOM.iconCopyDefault.classList.remove('hidden');
+            DOM.iconCopySuccess.classList.add('hidden');
+            DOM.copyBtnText.textContent = 'Copiar al Portapapeles';
+            DOM.btnCopy.classList.remove('from-emerald-600', 'to-teal-600');
+          }, 2500);
+
+        } catch (err) {
+          console.error('Error al copiar:', err);
+          Toast.show('Error al copiar. Selecciona el texto manualmente.', 'error');
+        }
+      }
+
+      // ==========================================
+      // 8. PASTE FROM CLIPBOARD
+      // ==========================================
+      async function pasteFromClipboard() {
+        try {
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            const clipboardText = await navigator.clipboard.readText();
+            if (clipboardText) {
+              DOM.inputText.value = clipboardText;
+              DOM.outputText.value = clipboardText;
+              Metrics.update(clipboardText);
+              History.push(clipboardText);
+              Toast.show('Texto pegado desde el portapapeles', 'success');
+              return;
+            }
+          }
+          // If readText is blocked by browser permissions
+          Toast.show('Usa Ctrl+V / Cmd+V para pegar directamente en el cuadro', 'warning');
+          DOM.inputText.focus();
+        } catch (err) {
+          Toast.show('Permiso de portapapeles no concedido. Usa Ctrl+V', 'warning');
+          DOM.inputText.focus();
+        }
+      }
+
+      // ==========================================
+      // 9. THEME TOGGLE (DARK / LIGHT)
+      // ==========================================
+      function initTheme() {
+        const storedTheme = localStorage.getItem('textcraft_theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (storedTheme === 'dark' || (!storedTheme && systemPrefersDark)) {
+          document.documentElement.classList.add('dark');
+          DOM.themeSun.classList.remove('hidden');
+          DOM.themeMoon.classList.add('hidden');
+        } else {
+          document.documentElement.classList.remove('dark');
+          DOM.themeSun.classList.add('hidden');
+          DOM.themeMoon.classList.remove('hidden');
+        }
+      }
+
+      function toggleTheme() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('textcraft_theme', isDark ? 'dark' : 'light');
+        if (isDark) {
+          DOM.themeSun.classList.remove('hidden');
+          DOM.themeMoon.classList.add('hidden');
+        } else {
+          DOM.themeSun.classList.add('hidden');
+          DOM.themeMoon.classList.remove('hidden');
+        }
+      }
+
+      // ==========================================
+      // 10. DEMO TEXT LOADER
+      // ==========================================
+      function loadDemoText() {
+        const demoContent = `¡HOLA A TODOS!   BIENVENIDOS  A   TEXTCRAFT.
+
+Esta es una demostración completa para probar todas y cada una de las utilidades.
+El el objetivo principal es limpiar y optimizar cualquier contenido.
+
+Visita nuestro sitio oficial en https://seamovil.com y contáctanos a soporte@seamovil.com hoy mismo.
+Haz clic aquí para no perderte nada. Suscríbete a nuestro canal y dale like y comparte.
+¡Oferta por tiempo limitado! Visita nuestra web para más información.
+
+En este párrafo tenemos palabras    duplicadas como como esta esta frase repetida.
+También tenemos múltiples líneas vacías y saltos innecesarios entre párrafos.
+
+
+
+¡Prueba ahora las herramientas de transformación de mayúsculas, eliminación de ruido publicitario y normalización de espacios!`;
+
+        DOM.inputText.value = demoContent;
+        DOM.outputText.value = demoContent;
+        Metrics.update(demoContent);
+        History.push(demoContent);
+        Toast.show('Texto de ejemplo cargado con éxito', 'success');
+      }
+
+      // ==========================================
+      // 11. DOWNLOAD AS TXT
+      // ==========================================
+      function downloadAsTxt() {
+        const content = DOM.outputText.value || DOM.inputText.value;
+        if (!content || content.trim() === '') {
+          Toast.show('No hay texto para descargar', 'warning');
+          return;
+        }
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `texto-procesado-${new Date().toISOString().slice(0, 10)}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        Toast.show('Archivo .txt descargado', 'success');
+      }
+
+      // ==========================================
+      // 12. INITIALIZATION & EVENT LISTENERS
+      // ==========================================
+      function init() {
+        initTheme();
+
+        // Real-time metrics on typing
+        DOM.inputText.addEventListener('input', (e) => {
+          Metrics.update(e.target.value);
+        });
+
+        DOM.outputText.addEventListener('input', (e) => {
+          Metrics.update(e.target.value);
+        });
+
+        // Tool buttons click delegation
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const action = btn.getAttribute('data-action');
+            const label = btn.querySelector('span')?.textContent?.trim() || action;
+            applyTransformation(action, label);
+          });
+        });
+
+        // Copy button
+        DOM.btnCopy.addEventListener('click', copyResultToClipboard);
+
+        // Paste button
+        DOM.btnPaste.addEventListener('click', pasteFromClipboard);
+
+        // Clear all button
+        DOM.btnClearAll.addEventListener('click', () => {
+          if (!DOM.inputText.value && !DOM.outputText.value) return;
+          DOM.inputText.value = '';
+          DOM.outputText.value = '';
+          Metrics.update('');
+          History.push('');
+          DOM.outputStatus.textContent = 'Espacio limpio';
+          Toast.show('Texto borrado', 'success', 1500);
+        });
+
+        // Undo & Redo
+        DOM.btnUndo.addEventListener('click', History.undo);
+        DOM.btnRedo.addEventListener('click', History.redo);
+
+        // Keyboard Shortcuts (Ctrl+Z, Ctrl+Y)
+        window.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+            if (e.shiftKey) {
+              e.preventDefault();
+              History.redo();
+            } else {
+              // Only prevent if not actively typing inside textarea native undo
+              // Or unify with history
+            }
+          }
+        });
+
+        // Use Output as Input (Chain transformations)
+        DOM.btnUseAsInput.addEventListener('click', () => {
+          const currentOutput = DOM.outputText.value;
+          if (!currentOutput || currentOutput.trim() === '') {
+            Toast.show('El panel de resultado está vacío', 'warning');
+            return;
+          }
+          DOM.inputText.value = currentOutput;
+          DOM.outputStatus.textContent = 'Resultado encadenado a la entrada';
+          Toast.show('Resultado listo para continuar procesando', 'success');
+        });
+
+        // Download .txt
+        DOM.btnDownload.addEventListener('click', downloadAsTxt);
+
+        // Load Demo
+        DOM.btnLoadDemo.addEventListener('click', loadDemoText);
+
+        // Theme Toggle
+        DOM.btnToggleTheme.addEventListener('click', toggleTheme);
+
+        // View Mode Switcher
+        DOM.btnViewSplit.addEventListener('click', () => {
+          DOM.workspaceContainer.className = 'grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-[380px]';
+          DOM.outputPanel.classList.remove('hidden');
+          DOM.btnViewSplit.classList.add('bg-white', 'dark:bg-slate-700', 'text-brand-700', 'dark:text-brand-300', 'shadow-sm');
+          DOM.btnViewSplit.classList.remove('text-slate-500', 'dark:text-slate-400');
+          DOM.btnViewSingle.classList.remove('bg-white', 'dark:bg-slate-700', 'text-brand-700', 'dark:text-brand-300', 'shadow-sm');
+          DOM.btnViewSingle.classList.add('text-slate-500', 'dark:text-slate-400');
+        });
+
+        DOM.btnViewSingle.addEventListener('click', () => {
+          DOM.workspaceContainer.className = 'grid grid-cols-1 gap-5 flex-1 min-h-[380px]';
+          // In single mode, output is hidden and transformations apply directly to inputText
+          DOM.outputPanel.classList.add('hidden');
+          DOM.btnViewSingle.classList.add('bg-white', 'dark:bg-slate-700', 'text-brand-700', 'dark:text-brand-300', 'shadow-sm');
+          DOM.btnViewSingle.classList.remove('text-slate-500', 'dark:text-slate-400');
+          DOM.btnViewSplit.classList.remove('bg-white', 'dark:bg-slate-700', 'text-brand-700', 'dark:text-brand-300', 'shadow-sm');
+          DOM.btnViewSplit.classList.add('text-slate-500', 'dark:text-slate-400');
+        });
+
+        // Initialize state with default empty string
+        History.push('');
+      }
+
+      // Run on DOM Ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>
